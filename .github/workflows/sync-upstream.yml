@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '0 0/8 * * *'
     # scheduled for 00:00 every Monday
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   merge-upstream:
