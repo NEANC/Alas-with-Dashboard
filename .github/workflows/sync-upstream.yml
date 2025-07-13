@@ -1,4 +1,4 @@
-name: Scheduled Merge Remote Action
+name: MergeRemoteAction
 on: 
   schedule:
     - cron: '0 0/8 * * *'
@@ -12,12 +12,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: upstream             # set the branch to merge to
+          ref: dashboard             # set the branch to merge to
           fetch-depth: 0 
       - name: Merge Upstream
         uses: exions/merge-upstream@v1
         with:
           upstream: LmeSzinc/AzurLaneAutoScript      # set the upstream repo
           upstream-branch: master   # set the upstream branch to merge from
-          branch: master         # set the branch to merge to
-
+          branch: dashboard         # set the branch to merge to
