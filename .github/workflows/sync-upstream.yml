@@ -1,0 +1,33 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'  # 每天 UTC 0 点执行（可修改为其他频率）
+  workflow_dispatch:  # 允许手动触发同步
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史，确保能合并所有提交
+
+      - name: Sync with upstream
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4  # 使用最新稳定版本
+        with:
+          # 替换为最上游项目的路径（即使已存档也能拉取）
+          upstream_repository: LmeSzinc/AzurLaneAutoScript
+          
+          # 替换为上游项目的主分支名称（通常是 main 或 master）
+          upstream_branch: master
+          
+          # 替换为你的 Fork 仓库的目标分支
+          target_branch: master
+          
+          # 可选参数：
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub 自动生成的 token
+          allow_ff: true  # 允许快进合并（fast-forward）
+          force: false    # 不强制推送（避免覆盖本地修改）
+          merge_method: merge  # 合并策略：merge（创建合并提交）、squash（压缩提交）或 rebase（变基）
