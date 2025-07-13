@@ -1,23 +1,22 @@
-name: Sync with upstream
-
-on:
+name: Scheduled Merge Remote Action
+on: 
   schedule:
-    - cron: '0 */8 * * *'  # 每天 UTC 0 点执行
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0/8 * * *'
+    # scheduled for 00:00 every Monday
 
 jobs:
-  sync:
+  merge-upstream:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout current repo
-        uses: actions/checkout@v4
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # 获取完整历史
+          ref: master             # set the branch to merge to
+          fetch-depth: 0 
+      - name: Merge Upstream
+        uses: exions/merge-upstream@v1
+        with:
+          upstream: LmeSzinc/AzurLaneAutoScript      # set the upstream repo
+          upstream-branch: master   # set the upstream branch to merge from
+          branch: master         # set the branch to merge to
 
-      - name: Merge upstream changes
-        uses: exions/merge-upstream@v1  # 使用正确的 Action
-        with:
-          upstream_repository: LmeSzinc/AzurLaneAutoScript  # 替换为实际的上游仓库
-          upstream_branch: master  # 上游分支名称
-          target_branch: master  # 目标分支名称
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub 自动生成的 token    
