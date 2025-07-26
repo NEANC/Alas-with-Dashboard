@@ -1,4 +1,4 @@
-name: [实验性]低消耗，定时同步:最上游到auto-pull分支
+name: 测试-判断改进，定时同步:最上游到auto-pull分支
 
 on:
   schedule:
