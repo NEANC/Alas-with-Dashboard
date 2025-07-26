@@ -95,8 +95,6 @@ jobs:
         if: |
           steps.check-updates.outputs.status == 'update-available' &&
           steps.merge.outputs.status == 'success'
-        permissions:
-          contents: write  # 临时提升权限
         run: |
           echo "推送更新到 ${{ env.TARGET_BRANCH }} 分支"
           git push origin ${{ env.TARGET_BRANCH }}
