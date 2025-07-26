@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 5  # 防止长时间运行
     
     permissions:
-      contents: read
+      contents: write
       issues: write
 
     steps:
