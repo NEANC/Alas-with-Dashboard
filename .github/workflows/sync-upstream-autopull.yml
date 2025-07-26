@@ -1,9 +1,10 @@
 name: 强制同步:最上游到auto-pull分支
 
 on:
-  schedule:
-    # 北京时间每8小时运行一次：04:00 (UTC 20:00)，12:00 (UTC 04:00)，20:00 (UTC 12:00)
-    - cron: '0 4,12,20 * * *'
+  # schedule:
+    # 每天 北京时间 08:00 (UTC 00:00)运行一次
+    # 备用：04:00 (UTC 20:00)，08:00 (UTC 00:00)，12:00 (UTC 04:00)
+    # - cron: '0 0 * * *'
   workflow_dispatch:     # 允许手动触发
 
 jobs:
@@ -14,11 +15,11 @@ jobs:
 
     steps:
       # STEP 1: 检出目标分支
-      - name: Checkout dev branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: 'auto-pull'  # 指定目标分支
-          fetch-depth: 0
+          fetch-depth: 0  # 获取完整历史
 
       # STEP 2: 添加最上游远程
       - name: Add topstream remote
@@ -30,7 +31,7 @@ jobs:
       - name: Try to merge changes
         id: merge
         run: |
-          git config user.name "GitHub Actions"
+          git config user.name "GitHub Actions Bot"
           git config user.email "actions@users.noreply.github.com"
           
           if git merge topstream/master --allow-unrelated-histories -m "Merge topstream updates"; then
@@ -45,7 +46,7 @@ jobs:
           fi
 
       # STEP 4: 推送到目标分支
-      - name: Push to dev branch
+      - name: Push changes
         if: steps.merge.outputs.status == 'success'
         run: git push origin auto-pull  # 推送到指定分支
 
@@ -58,7 +59,14 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: "⚠️ Merge conflict in dev branch",  # 添加分支信息
-              body: `dev 分支自动合并失败！需要手动解决冲突：\n\n` +
+              title: "⚠️ auto-pull 分支存在合并冲突",
+              body: `auto-pull 分支自动合并失败！需要手动解决冲突：\n\n` +
                     `工作流运行: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             })
+
+      # STEP 6: 成功通知
+      - name: Success notification
+        if: steps.merge.outputs.status == 'success'
+        run: |
+          echo "✅ 成功合并上游更新到 ${{ env.TARGET_BRANCH }} 分支"
+          echo "新提交: ${{ steps.check-updates.outputs.new_commit }}"
